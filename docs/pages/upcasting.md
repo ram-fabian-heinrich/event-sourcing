@@ -1,19 +1,19 @@
-# Upcasting
+Corrected version (spelling, grammar, and clarity only):
 
-There are cases where we already have events in our stream but there is data missing
-or not in the right format for our new usecase. Normally you would need to create versioned events for this.
-This can lead to many versions of the same event which could lead to some chaos.
-To prevent this we offer `Upcaster`, which can operate on the payload before denormalizing to an event object.
-There you can change the event name and adjust the payload of the event.
+⸻
 
-## Adjust payload
+Upcasting
 
-Let's assume we have an `ProfileCreated` event which holds an email.
-Now the business needs to have all emails to be in lower case.
-For that we could adjust the aggregate and the projections to take care of that.
-Or we can do this beforehand so we don't need to maintain two different places.
+There are cases where we already have events in our stream, but some data is missing or not in the correct format for a new use case. Normally, you would need to create versioned events for this. This can lead to many versions of the same event, which can cause unnecessary complexity.
 
-```php
+To prevent this, we offer an Upcaster, which can operate on the payload before it is denormalized into an event object. There, you can change the event name and adjust the event payload.
+
+Adjust payload
+
+Assume we have a ProfileCreated event that contains an email address. The business now requires all email addresses to be stored in lowercase.
+
+One option would be to adjust the aggregate and the projections to handle this. Alternatively, this can be done beforehand, so there is no need to maintain the same logic in multiple places.
+
 use Patchlevel\EventSourcing\Serializer\Upcast\Upcast;
 use Patchlevel\EventSourcing\Serializer\Upcast\Upcaster;
 
@@ -21,7 +21,7 @@ final class ProfileCreatedEmailLowerCastUpcaster implements Upcaster
 {
     public function __invoke(Upcast $upcast): Upcast
     {
-        // ignore if other event is processed
+        // Ignore if a different event is processed
         if ($upcast->eventName !== 'profile.created') {
             return $upcast;
         }
@@ -33,17 +33,15 @@ final class ProfileCreatedEmailLowerCastUpcaster implements Upcaster
         return $upcast->replacePayloadByKey('email', strtolower($upcast->payload['email']));
     }
 }
-```
+
 !!! warning
 
-    You need to consider that other events are passed to the Upcaster. So and early out is here endorsed.
-    
-## Adjust event name
+Other events are also passed to the upcaster. An early return is therefore recommended.
 
-Sometimes your event name was not the best choice and you want to change it.
-For this we can use the `Upcaster` to change the event name.
+Adjust event name
 
-```php
+Sometimes an event name turns out to be a poor choice and needs to be changed. An Upcaster can be used to rename events.
+
 use Patchlevel\EventSourcing\Serializer\Upcast\Upcast;
 use Patchlevel\EventSourcing\Serializer\Upcast\Upcaster;
 
@@ -64,17 +62,15 @@ final class EventNameRenameUpcaster implements Upcaster
         return $upcast;
     }
 }
-```
+
 !!! tip
 
-    Events can also have [aliases](./events.md#alias). This is usually sufficient.
-    
-## Configure
+Events can also have [aliases](./events.md#alias). This is usually sufficient.
 
-After we have defined the upcasting rules, we also have to pass the whole thing to the serializer.
-Since we have multiple upcasters, we use a chain here.
+Configure
 
-```php
+After defining the upcasting rules, they must be passed to the serializer. Since multiple upcasters are involved, a chain is used.
+
 use Patchlevel\EventSourcing\Metadata\Event\EventRegistry;
 use Patchlevel\EventSourcing\Serializer\DefaultEventSerializer;
 use Patchlevel\EventSourcing\Serializer\Upcast\UpcasterChain;
@@ -89,9 +85,8 @@ $serializer = DefaultEventSerializer::createFromPaths(
     ['src/Domain'],
     $upcaster,
 );
-```
-## Learn more
 
-* [How to create messages](message.md)
-* [How to define events](events.md)
-* [How to configure store](store.md)
+Learn more
+	•	How to create messages￼
+	•	How to define events￼
+	•	How to configure the store￼
