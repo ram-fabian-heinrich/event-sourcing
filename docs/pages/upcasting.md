@@ -1,14 +1,14 @@
 # Upcasting
 
 There are cases where we already have events in our stream but there is data missing
-or not in the right format for our new usecase. Normally you would need to create versioned events for this.
+or not in the right format for our new use case. Normally you would need to create versioned events for this.
 This can lead to many versions of the same event which could lead to some chaos.
 To prevent this we offer `Upcaster`, which can operate on the payload before denormalizing to an event object.
 There you can change the event name and adjust the payload of the event.
 
 ## Adjust payload
 
-Let's assume we have an `ProfileCreated` event which holds an email.
+Let's assume we have a `ProfileCreated` event which holds an email.
 Now the business needs to have all emails to be in lower case.
 For that we could adjust the aggregate and the projections to take care of that.
 Or we can do this beforehand so we don't need to maintain two different places.
@@ -36,7 +36,7 @@ final class ProfileCreatedEmailLowerCastUpcaster implements Upcaster
 ```
 !!! warning
 
-    You need to consider that other events are passed to the Upcaster. So and early out is here endorsed.
+    You need to consider that other events are passed to the Upcaster. So an early return is recommended.
     
 ## Adjust event name
 
